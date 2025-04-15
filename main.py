@@ -210,27 +210,43 @@ z_dim=100
 class Gen(nn.Module):
     def __init__(self, nb_item):
         super(Gen, self).__init__()
-        self.fc1 = nn.Linear(nb_item * 2, 256)
-        self.fc2 = nn.Linear(256, nb_item)
+        # 增加更多层和更高维度的神经元
+        self.fc1 = nn.Linear(nb_item * 2, 512)  
+        self.fc2 = nn.Linear(512, 1024)         
+        self.fc3 = nn.Linear(1024, 2048)        
+        self.fc4 = nn.Linear(2048, 4096)       
+        self.fc5 = nn.Linear(4096, nb_item)    
         self.relu = nn.ReLU()
 
     def forward(self, x):
         x = self.relu(self.fc1(x))
-        x = self.fc2(x)
-        x = torch.clamp(x, min=0, max=40)  
+        x = self.relu(self.fc2(x))
+        x = self.relu(self.fc3(x))
+        x = self.relu(self.fc4(x))
+        x = self.fc5(x)
+        x = torch.clamp(x, min=0, max=40)  # 限制输出在0到40之间
         return x
 
+# 判别器（Discriminator）
 class Dis(nn.Module):
     def __init__(self, nb_item):
         super(Dis, self).__init__()
-        self.fc1 = nn.Linear(nb_item, 256)
-        self.fc2 = nn.Linear(256, 1)
+       
+        self.fc1 = nn.Linear(nb_item, 1024)   
+        self.fc2 = nn.Linear(1024, 2048)     
+        self.fc3 = nn.Linear(2048, 4096)      
+        self.fc4 = nn.Linear(4096, 8192)     
+        self.fc5 = nn.Linear(8192, 1)         
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         x = self.relu(self.fc1(x))
-        x = self.sigmoid(self.fc2(x))
+        x = self.relu(self.fc2(x))
+        x = self.relu(self.fc3(x))
+        x = self.relu(self.fc4(x))
+        x = self.fc5(x)
+        x = self.sigmoid(x)
         return x
 
 class GaussianDiffusion(nn.Module):
@@ -310,7 +326,7 @@ def train_DGRM(save_dir, train_input_data, train_output_data, nb_item, epoches, 
         gen.eval()
         for step in range(4):  # 示例：步数
             for idxs, _ in dataloader:
-                                idxs = idxs.long()
+                idxs = idxs.long()
                 idxs = torch.clamp(idxs, 0, len(train_input_data) - 1)
                 headways_at_t = train_input_data[idxs, :vehicle_count_max]  # 获取车头时距
                 # 使用扩散模型的正向过程生成噪声数据
