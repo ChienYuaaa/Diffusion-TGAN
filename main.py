@@ -224,7 +224,6 @@ class Gen(nn.Module):
         x = self.relu(self.fc3(x))
         x = self.relu(self.fc4(x))
         x = self.fc5(x)
-        x = torch.clamp(x, min=0, max=40)  # 限制输出在0到40之间
         return x
 
 # 判别器（Discriminator）
@@ -297,7 +296,7 @@ def test_DGRM(test_input_data, test_output_data, trained_gen):
     print(f"测试结果 - MAPE: {mape:.2f}%") 
     return mse, mape
 
-def train_DGRM(save_dir, train_input_data, train_output_data, nb_item, epoches, batch_size, test_input_data, test_output_data):
+def train_DTG(save_dir, train_input_data, train_output_data, nb_item, epoches, batch_size, test_input_data, test_output_data):
     os.makedirs(save_dir, exist_ok=True)
     save_path = os.path.join(save_dir, 'model_1.pkl')
     gen = Gen(nb_item)
