@@ -35,6 +35,11 @@ def generate_corrected_dataset(trajectory_data):
 
     return corrected_df
 ···
+# Model training
+We show the training commands that we used below. In most cases, the training commands are similar, so below we use data.csv dataset as an example:
+```
+python main.py --data data.csv --save_dir ./results --epochs 10 --batch_size 32
+```
 # Tips
 This repository contains an example of a Diffusion-TGAN. You can run python main.py to reproduce our experimental results. 
 After the paper is accepted, we will release all the source code. The validation and test datasets can be accessed at https://pan.baidu.com/s/1eKWLMyWwsbJ9sRmVCluY1g. The extraction code is: jydr.
